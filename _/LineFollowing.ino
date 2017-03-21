@@ -1,6 +1,10 @@
 #include <Servo.h>
 #include <SoftwareSerial.h>
 
+class LineFollowing {
+    
+}
+
 SoftwareSerial Xbee (10, 11);
 SoftwareSerial RFID (0, 1);
 
@@ -45,23 +49,26 @@ void loop() {
     Serial.print(' ');
     Serial.println(ls1);
 
-    if ((ls1 > t) && (ls2 > t))
-    speed(0);
+    if ((ls1 > t) && (ls2 > t)) {
+        speed(0);
+        delay(200);
+        speed(1);
+        delay(200);
+    }
     else if (ls1 > t && ls2 < t)
-    speed(-.5, .5);
+        speed(-.5, .5);
     else if (ls1 < t && ls2 > t)
-    speed(.5, -.5);
+        speed(.5, -.5);
     else
-    speed(1);
+        speed(1);
 }
 
 // Set speed between -1 and 1
 // l - left, r - right
 void speed(double l, double r) {
-    // TODO add calibration ?
     left.write(1500 + 200 * l);
     right.write(1500 - 100 * r);
-    delay(l != r ? 100 : 50);
+    delay(l != r ? 150 : 50);
 }
 
 // Set forward speed
