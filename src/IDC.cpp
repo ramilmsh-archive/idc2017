@@ -1,12 +1,15 @@
 #include "Arduino.h"
-#include "LineFollowing.h"
 
-LineFollowing *flw;
+#include "LineFollowing.h"
+#include "RFID.h"
+
+LineFollowing flw;
+RFID rfid;
 void setup() {
-    flw = new LineFollowing();
 }
 
 void loop() {
-    flw->forward();
+    flw.forward();
+    rfid.detect();
     delay(500);
 }
