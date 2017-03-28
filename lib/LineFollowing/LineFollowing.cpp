@@ -4,9 +4,12 @@
 #include "LineFollowing.h"
 
 LineFollowing::LineFollowing() {
+    Serial.begin(9600);
+    while(!Serial);
     left.attach(PIN_SERVO_LEFT);
     right.attach(PIN_SERVO_RIGHT);
-    speed(0);
+    speed(0.);
+    Serial.print('b');
 
     pinMode(PIN_QTI_POWER_LEFT, OUTPUT);
     digitalWrite(PIN_QTI_POWER_LEFT, HIGH);
@@ -21,7 +24,6 @@ void LineFollowing::speed(double s) {
 void LineFollowing::speed(double l, double r) {
     left.write(1500 + 200 * l);
     right.write(1500 - 100 * r);
-    delay(l != r ? turn_delay : forward_delay);
 }
 
 void LineFollowing::forward() {
@@ -55,7 +57,7 @@ long double LineFollowing::rc_time(int pin) {
     pinMode(pin, INPUT);
     digitalWrite(pin, LOW);
     while (digitalRead(pin))
-    duration++;
+        duration++;
 
     return duration;
 }

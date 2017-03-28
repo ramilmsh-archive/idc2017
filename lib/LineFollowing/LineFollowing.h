@@ -4,7 +4,7 @@ class LineFollowing {
 private:
     Servo left, right;
 
-    int turn_delay = 200;
+    int turn_delay = 50;
     int forward_delay = 50;
     int obstacle_delay = 200;
 

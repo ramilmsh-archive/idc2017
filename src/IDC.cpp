@@ -1,15 +1,18 @@
 #include "Arduino.h"
+#include "SoftwareSerial.h"
 
 #include "LineFollowing.h"
 #include "RFID.h"
 
 LineFollowing flw;
-RFID rfid;
+RFID tags;
+
 void setup() {
+    Serial.begin(9600);
+    while (!Serial);
 }
 
 void loop() {
-    flw.forward();
-    rfid.detect();
+    Serial.println('v');
     delay(500);
 }
