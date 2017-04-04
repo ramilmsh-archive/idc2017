@@ -120,7 +120,7 @@ int calc_score() {
   return score;
 }
 
-void send() {
+void _send() {
   int count = 0;
 
   while (1) {

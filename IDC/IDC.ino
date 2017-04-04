@@ -58,6 +58,7 @@ void setup() {
   }
 
   speed(0.);
+  _send();
   play();
 }
 
