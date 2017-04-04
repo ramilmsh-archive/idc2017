@@ -13,9 +13,6 @@
 #define QTI_POWER_PIN_LEFT 6
 #define QTI_POWER_PIN_RIGHT 3
 
-#define LED_GREEN 7
-#define LED_RED 8
-
 #define LIMIT 100
 #define THRESHOLD 50
 #define RFID_THRESHOLD 150
@@ -26,9 +23,6 @@ Servo left, right;
 byte data;
 
 void setup() {
-  pinMode(LED_GREEN, OUTPUT);
-  pinMode(LED_RED, OUTPUT);
-  
   // Attaching servos
   left.attach(SERVO_PIN_LEFT);
   right.attach(SERVO_PIN_RIGHT);
@@ -87,22 +81,20 @@ void forward() {
 
 boolean detect() {
   Serial.println("------------------------");
-  digitalWrite(LED_GREEN, HIGH);
+  _display('H');
   int c = 0;
   long t;
   while (c++ < LIMIT) {
     t = rc_time(RFID_IN);
     Serial.println(t);
     if (t > RFID_THRESHOLD) {
-      digitalWrite(LED_GREEN, LOW);
-      digitalWrite(LED_RED, HIGH);
+      _display('F');
       delay(150);
-      digitalWrite(LED_RED, LOW);
       return 1;
     }
   }
 
-  digitalWrite(LED_GREEN, LOW);
+  _display(' ');
   return 0;
 }
 
@@ -131,8 +123,3 @@ long rc_time(int pin) {
 
   return d;
 }
-
-
-
-
-
