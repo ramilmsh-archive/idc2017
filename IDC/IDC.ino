@@ -4,9 +4,6 @@
 #define RFID_IN 31
 #define RFID_POWER 33
 
-#define Xbee_Rx 11
-#define Xbee_Tx 10
-
 #define SERVO_PIN_LEFT 13
 #define SERVO_PIN_RIGHT 12
 
@@ -26,10 +23,7 @@
 #define PIEZO_PIN 9
 
 Servo left, right;
-boolean p[5];
-int score;
-
-SoftwareSerial Xbee (Xbee_Rx, Xbee_Tx);
+byte data;
 
 void setup() {
   pinMode(LED_GREEN, OUTPUT);
@@ -43,9 +37,8 @@ void setup() {
   Serial.begin(9600);
   while (!Serial);
 
-  // Starting Xbee
-  Xbee.begin(2400);
-  while (!Xbee);
+  setup_Xbee();
+  setup_display();
 
   // Line Following QTI
   pinMode(QTI_POWER_PIN_LEFT, OUTPUT);
@@ -61,22 +54,10 @@ void setup() {
   pinMode(PIEZO_PIN, OUTPUT);
   for (int i = 0; i < 5; ++i) {
     forward();
-    p[i] = detect();
+    data = data | (detect() << i);
   }
-  Serial.print("done :: \n");
-  Serial.print(p[0]);
-  Serial.print(p[1]);
-  Serial.print(p[2]);
-  Serial.print(p[3]);
-  Serial.print(p[4]);
-  Serial.println();
 
   speed(0.);
-  wait();
-  get_data();
-  send_data();
-  get_data();
-  
   play();
 }
 
@@ -122,29 +103,6 @@ boolean detect() {
 
   digitalWrite(LED_GREEN, LOW);
   return 0;
-}
-
-void wait() {
-  // Enable, when communication is done
-  return;
-  byte w = 0;
-  while (w != 31) {
-    Xbee.print('3');
-    if (Xbee.available())
-      w = w & ((byte) Xbee.read());
-  }
-}
-
-void get_data() {
-  /*
-     whatever we decide to use
-  */
-}
-
-void send_data() {
-  /*
-     whatever we decide to use
-  */
 }
 
 // Set speed between -1 and 1
