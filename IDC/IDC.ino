@@ -1,19 +1,22 @@
 #include "Servo.h"
 #include "SoftwareSerial.h"
 
-#define RFID_IN 31
-#define RFID_POWER 33
+#define RFID_OUT 33
+#define RFID_5V 31
+#define RFID_GROUND 35
+
+#define LEFT_OUT 39
+#define LEFT_5V 37
+#define LEFT_GROUND 41
+
+#define RIGHT_OUT 45
+#define RIGHT_5V 43
+#define RIGHT_GROUND 47
 
 #define SERVO_PIN_LEFT 13
 #define SERVO_PIN_RIGHT 12
 
-#define QTI_PIN_LEFT 5
-#define QTI_PIN_RIGHT 2
-
-#define QTI_POWER_PIN_LEFT 6
-#define QTI_POWER_PIN_RIGHT 3
-
-#define LIMIT 100
+#define LIMIT 150
 #define THRESHOLD 50
 #define RFID_THRESHOLD 150
 
@@ -30,19 +33,25 @@ void setup() {
   // Starting Serial
   Serial.begin(9600);
   while (!Serial);
+  setup_LCD();
 
-  setup_Xbee();
-  setup_display();
+  // Left QTI
+  pinMode(LEFT_5V, OUTPUT);
+  digitalWrite(LEFT_5V, HIGH);
+  pinMode(LEFT_GROUND, OUTPUT);
+  digitalWrite(LEFT_GROUND, LOW);
 
-  // Line Following QTI
-  pinMode(QTI_POWER_PIN_LEFT, OUTPUT);
-  pinMode(QTI_POWER_PIN_RIGHT, OUTPUT);
-  digitalWrite(QTI_POWER_PIN_LEFT, HIGH);
-  digitalWrite(QTI_POWER_PIN_RIGHT, HIGH);
+  // Right QTI
+  pinMode(RIGHT_5V, OUTPUT);
+  digitalWrite(RIGHT_5V, HIGH);
+  pinMode(RIGHT_GROUND, OUTPUT);
+  digitalWrite(RIGHT_GROUND, LOW);
 
   // RFID
-  pinMode(RFID_POWER, OUTPUT);
-  digitalWrite(RFID_POWER, HIGH);
+  pinMode(RFID_5V, OUTPUT);
+  digitalWrite(RFID_5V, HIGH);
+  pinMode(RFID_GROUND, OUTPUT);
+  digitalWrite(RFID_GROUND, LOW);
 
   // PIEZO
   pinMode(PIEZO_PIN, OUTPUT);
@@ -51,50 +60,55 @@ void setup() {
     data = data | (detect() << i);
   }
 
-  speed(0.);
+  left.detach();
+  right.detach();
+
+  calc_score();
+  setup_Xbee();
   _send();
-  play();
 }
 
 void loop() {}
 
 void forward() {
+  write("following");
   speed(1.);
   long ls1 = 0;
   long ls2 = 0;
 
   while ((ls1 < THRESHOLD) || (ls2 < THRESHOLD)) {
-    ls1 = rc_time(QTI_PIN_LEFT);
-    ls2 = rc_time(QTI_PIN_RIGHT);
+    ls1 = rc_time(LEFT_OUT);
+    ls2 = rc_time(RIGHT_OUT);
+    
     /*Serial.print(ls1);
-      Serial.print(' ');
-      Serial.println(ls2);
-    */
+    Serial.print(' ');
+    Serial.println(ls2);*/
+    
     if (ls1 > THRESHOLD && ls2 < THRESHOLD)
-      speed(.1, 1);
+      speed(-.5, 1);
     else if (ls1 < THRESHOLD && ls2 > THRESHOLD)
-      speed(1, .1);
+      speed(1, -.5);
     else
       speed(1);
   }
 }
 
 boolean detect() {
-  Serial.println("------------------------");
-  _display('H');
+  // Serial.println("------------------------");
+  write("detecting");
   int c = 0;
   long t;
   while (c++ < LIMIT) {
-    t = rc_time(RFID_IN);
-    Serial.println(t);
+    t = rc_time(RFID_OUT);
+    // Serial.println(t);
     if (t > RFID_THRESHOLD) {
-      _display('F');
+      write("found");
       delay(150);
       return 1;
     }
   }
 
-  _display(' ');
+  write("");
   return 0;
 }
 
@@ -118,7 +132,7 @@ long rc_time(int pin) {
   pinMode(pin, INPUT);
   digitalWrite(pin, LOW);
 
-  while (digitalRead(pin))
+  while (digitalRead(pin) && (d <= RFID_THRESHOLD + 1))
     d++;
 
   return d;
