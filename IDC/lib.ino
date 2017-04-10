@@ -22,10 +22,6 @@ byte finished = 0;
 
 // Starting Xbee
 void setup_Xbee() {
-  // Powering up the Xbee
-  pinMode(Xbee_5V, OUTPUT);
-  digitalWrite(Xbee_5V, HIGH);
-
   // The data variable
   // Bot number written into it
   data = data | BOT_NUMBER << 5;
