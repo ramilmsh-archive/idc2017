@@ -83,7 +83,7 @@ void _send() {
 
   while (1) {
     if ((finished != 31) && Xbee.available()) {
-      char incoming = Xbee.read(),
+      byte incoming = Xbee.read(),
            bot = incoming >> 5;
 
       Serial.println(incoming);
@@ -95,7 +95,7 @@ void _send() {
       total_score = calc_score();
       write(total_score);
     }
-    //Xbee.print((char) data);
+    Xbee.write(data);
     delay(50);
   }
 }
