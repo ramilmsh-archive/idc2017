@@ -36,7 +36,6 @@ void setup_Xbee() {
 }
 
 void setup_LCD() {
-  group[4] = 31;
   LCD.begin(9600);
   while (!LCD);
   LCD.write(12);
@@ -84,8 +83,10 @@ void _send() {
 
   while (1) {
     if ((finished != 31) && Xbee.available()) {
-      byte incoming = (byte) Xbee.read(),
+      char incoming = Xbee.read(),
            bot = incoming >> 5;
+
+      Serial.println(incoming);
 
       incoming = incoming & 31;
       group[bot] = incoming;
@@ -94,7 +95,7 @@ void _send() {
       total_score = calc_score();
       write(total_score);
     }
-    Xbee.print((char) data);
+    //Xbee.print((char) data);
     delay(50);
   }
 }
