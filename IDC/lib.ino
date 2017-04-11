@@ -57,6 +57,13 @@ void write(byte x) {
 
 // Calculating score
 int calc_score() {
+  group[1] = 31;
+  Serial.println("--------------------");
+  for (int i = 0; i < 5; ++i) {
+    Serial.print(i);
+    Serial.print(" :: ");
+    Serial.println(group[i], BIN);
+  }
   int score = 0;
   // Removing botnumber from data and writing it to the variable
   group[BOT_NUMBER] = data & 31;
@@ -104,25 +111,30 @@ void _send() {
            // getting the number of the bot (first three bits)
            bot = incoming >> 5;
 
-      Serial.println(incoming);
+      if (bot > 4)
+        continue;
 
       // getting only the info, removing the bot number
       incoming = incoming & 31;
       group[bot] = incoming;
 
+      /*Serial.print(bot);
+      Serial.print(" :: ");
+      Serial.println(incoming, BIN);*/
+
       // recording that this bot has been received already
       finished = finished | (1 << bot);
-      
+
       // calculating the score and displaying it
       total_score = calc_score();
       write(total_score);
     }
-    
+
     // Sending data every 50 ms
     // !!! IMPORTANT !!!
     // DO NOT USE Xbee.print
     // Xbee write sends raw data, which is what we need
     Xbee.write(data);
-    delay(50);
+    delay(200);
   }
 }
