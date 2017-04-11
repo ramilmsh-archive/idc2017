@@ -16,6 +16,7 @@ byte group[5];
 
 // Global variables for score
 int total_score;
+int local_score;
 
 // Variable that keeps checks if all the data was received
 byte finished = 0;
@@ -55,6 +56,15 @@ void write(byte x) {
   LCD.print(x, BIN);
 }
 
+void write(int t, int l) {
+  LCD.write(12);
+  LCD.print("Total: ");
+  LCD.print(t);
+  LCD.write(13);
+  LCD.print("Local: ");
+  LCD.print(l);
+}
+
 // Calculating score
 int calc_score() {
   group[1] = 31;
@@ -88,8 +98,10 @@ int calc_score() {
   // Beaters:
   //  same as Seeker
   _t = group[3] & group[4];
-  for (int i = 0; i < 5; ++i)
-    score += (((1 << i) & _t) != 0) * 10;
+  for (int i = 0; i < 5; ++i) {
+    local_score = (((1 << i) & _t) != 0) * 10;
+    score += local_score;
+  }
 
   LCD.write(12);
   LCD.print(score);
@@ -119,15 +131,15 @@ void _send() {
       group[bot] = incoming;
 
       /*Serial.print(bot);
-      Serial.print(" :: ");
-      Serial.println(incoming, BIN);*/
+        Serial.print(" :: ");
+        Serial.println(incoming, BIN);*/
 
       // recording that this bot has been received already
       finished = finished | (1 << bot);
 
       // calculating the score and displaying it
       total_score = calc_score();
-      write(total_score);
+      write(total_score, local_score);
     }
 
     // Sending data every 50 ms
