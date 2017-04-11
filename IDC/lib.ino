@@ -71,7 +71,7 @@ int calc_score() {
   // Chaser:
   //  if snitch is caught - 1
   //  if not - 0
-  score += group[0] * 150;
+  score += (group[0] != 0) * 150;
 
   // Seekers:
   //  find intersection of both and add 10 points for each
