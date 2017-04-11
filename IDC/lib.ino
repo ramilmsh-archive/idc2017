@@ -97,11 +97,12 @@ int calc_score() {
 
   // Beaters:
   //  same as Seeker
+  local_score = 0;
   _t = group[3] & group[4];
-  for (int i = 0; i < 5; ++i) {
-    local_score = (((1 << i) & _t) != 0) * 10;
-    score += local_score;
-  }
+  for (int i = 0; i < 5; ++i)
+    local_score += (((1 << i) & _t) != 0) * 10;
+  
+  score += local_score;
 
   LCD.write(12);
   LCD.print(score);
